@@ -1,0 +1,2 @@
+apt install neovim ranger yarn nodejs -y
+curl -sL install-node.now.sh/lts | bash

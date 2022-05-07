@@ -1,0 +1,28 @@
+git init 创建仓库
+git add . 追踪所有文件
+git status 查看状态
+git diff 还没有添加的
+git reset 撤消
+git config --global user.name "name"
+git config --global user.email "..."
+git commit -m "......"
+git commit 
+git config --global core,,editor vim
+vim .gitignore 在里面写想要忽略的文件
+git rm --cached "加文件名"
+
+git branch 分支的名字 添加分支
+
+git checkout 分支的名字 切换分支
+
+git merge 分支的名字 合并分支
+
+git branch -d(D强制删除) 分支的名字 删除分支
+
+git remote add origin 项目的地址
+
+git push --set-upstream origin master
+
+git config credential,helper store
+
+git pull

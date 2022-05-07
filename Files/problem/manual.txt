@@ -1,0 +1,67 @@
+#coc.nvim
+npm		
+yarn
+nodejs
+
+#terminal
+tilda
+terminator
+
+#screen
+simplescreenrecorder
+
+
+htop
+
+#Pictures shows
+shotwell
+feh
+
+#Pictures edit
+gimp
+
+libreoffice
+
+vlc
+audacious
+
+#IRC chat
+pidgin
+
+#email
+thunderbird
+
+#BT
+ktorrent
+
+#downloads
+wget
+axel
+scp 
+
+# kde pdf read
+okular
+
+#audio
+alsa-utils pulseaudio pulseaudio-alsa
+
+#input
+xf86-input-synaptif86-input-synaptics
+
+#GPU
+xf86-video-amdgpu f86-video-amdgpu
+
+xorg              
+
+#web
+firefox
+w3m
+
+#fcitx
+sudo pacman -S fcitx fcitx-im
+sudo pacman -S fcitx-configtools   #图形配置工具
+sudo pacman -S sunpinyin    #输入法
+
+
+network-manager-
+paxmier
