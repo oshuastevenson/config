@@ -3,22 +3,15 @@ if empty(glob('~/.config/nvim/autoload/plug.vim'))
 silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
+"
+"F5 编译程序，F6运行程序，F7 word模式
+"
 "nvim
 "let mapleader=" "
 "开启高亮
 syntax on
-
 "Theme
-"color molokai
-"color solarized
-"color gruvbox
-"color one
-set background=dark
-
-color monokai
-
-
-
+colorscheme dracula
 "vim 响应
 set updatetime=100
 "vim 剪切板
@@ -33,15 +26,10 @@ set shortmess+=c
 set hidden
 "输入线
 set cursorline
-
 set showcmd
 set noshowmatch
-
 "set ruler
-
 "set cindent
-
-
 "补全
 set wildmenu
 "搜索
@@ -52,6 +40,7 @@ set ignorecase
 set smartcase
 
 set nowrap
+set expandtab
 set tabstop=4
 set softtabstop=4
 set shiftwidth=4
@@ -76,14 +65,15 @@ set fencs=utf8,gbk,gb2312,gb18030
 
 set list lcs=tab:\|\ "提供的一个可视化的缩进 For code indented with tabs.
 
-"折叠
+func! WordProcessorMode()
+	setlocal textwidth=80
+	setlocal smartindent
+	setlocal speel spelllang=en_us
+	setlocal noexpandtab
+endfu
 
-
-
-
-
-
-
+"call
+"com! WP call WordProcessorMode
 
 "Translate and launch
 func! CompileGcc()
@@ -135,6 +125,9 @@ endfunc
 func! CompileJava()
     exec "!javac %"
 endfunc
+func! RunLua()
+		exec "!lua %"
+endfunc
 
 
 func! CompileCode()
@@ -147,6 +140,8 @@ func! CompileCode()
                 exec "call RunPython()"
         elseif &filetype == "java"
                 exec "call CompileJava()"
+		elseif &filetype == "lua"
+			exec "call RunLua()"
         endif
 endfunc
 
@@ -171,18 +166,7 @@ vmap <F5> <ESC>:call CompileCode()<CR>
 
 map <F6> :call RunResult()<CR>
 
-
-
-
-
-
-
-
-
-
-
-
-
+map <F7> :com! WP call WordProcessorMode()<CR>
 
 
 
@@ -256,17 +240,15 @@ let g:coc_global_extensions = [
 	\ 'coc-sh',
 	\ 'coc-syntax',
 	\ 'coc-vimlsp',
+	\ 'coc-word',
+	\ 'coc-snippets',
 	\ 'coc-json',
+	\ 'coc-sumneko-lua',
 	\ 'coc-pyright',
 	\ 'coc-clangd',]
 
-	"\ 'coc-word',
+	"\ 'coc-marketplace',
 	"\ 'coc-tsserver',
-
-
-
-
-
 
 "NERDTree
 "autocmd vimenter * NERDTree  "自动开启Nerdtree
@@ -349,8 +331,6 @@ let g:airline_symbols.crypt = "CR"
 
 
 
-
-
 "nerdcommenter是一个很好用的注释工具，在normal和visual模式下，他会对你光标所在行或所选中的多行进行注释和去注释，只需要你按下 <\>+<c>+<space>。
 "add spaces after comment delimiters by default
 let g:NERDSpaceDelims = 1
@@ -407,7 +387,6 @@ let g:rainbow_conf = {
 \}
 
 
-
 "tagbar可以用来展示当前的文件的一些函数。
 let g:tagbar_width=30
 nnoremap <silent> <F4> :TagbarToggle<CR> " 将tagbar的开关按键设置为 F4
@@ -416,12 +395,13 @@ nnoremap <silent> <F4> :TagbarToggle<CR> " 将tagbar的开关按键设置为 F4
 "set foldmethod=indent
 "let g:SimpylFold_docstring_preview=0
 
-
 "plug.vim
 call plug#begin('~/.config/nvim/plugged')
 "coc.nvim
 Plug 'neoclide/coc.nvim', {'branch':'release'}
 
+"lua
+"Plug 'sumneko/lua-language-server'
 "NERDTree
 Plug 'preservim/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
@@ -443,7 +423,6 @@ Plug 'scrooloose/nerdcommenter'
 "rainbow是一个提供嵌套括号高亮的一个工具。
 Plug 'luochen1990/rainbow'
 
-
 "tagbar可以用来展示当前的文件的一些函数。
 Plug 'majutsushi/tagbar'
 "vim-cpp-enhanced-highlight，这个是用来加强C++的高亮的
@@ -451,7 +430,16 @@ Plug 'octol/vim-cpp-enhanced-highlight'
 
 "honza/vim-snippets提供C++的snippets
 Plug 'honza/vim-snippets'
+"
+"vimspector debug
+"Plug 'puremourning/vimspector'
+
 "SimpylFold设置代码折叠
 "Plug 'tmhedberg/SimpylFold'
+"dracula color
+Plug 'Mofiqul/dracula.nvim'
+"
+Plug 'tpope/vim-surround' " type yskw' to wrap the word with '' or type cs'` to change 'word' to `word`
+Plug 'gcmt/wildfire.vim' " in Visual mode, type k' to select all text in '', or type k) k] k} kp
 
 call plug#end()

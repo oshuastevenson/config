@@ -1,0 +1,4 @@
+{
+	"snippets.userSnippetsDirectory": "/home/arch/.config/nvim/snippets",
+	"snippets.ultisnips.enable":false
+}
