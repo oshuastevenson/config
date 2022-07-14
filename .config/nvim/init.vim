@@ -6,12 +6,21 @@ endif
 "
 "F5 编译程序，F6运行程序，F7 word模式
 "
+
+
+
 "nvim
 "let mapleader=" "
 "开启高亮
 syntax on
 "Theme
 colorscheme dracula
+
+
+
+
+
+"Set""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "vim 响应
 set updatetime=100
 "vim 剪切板
@@ -45,6 +54,20 @@ set tabstop=4
 set softtabstop=4
 set shiftwidth=4
 "set autoindent
+set fileencodings=utf-8,gb2312,gb18030,gbk,ucs-bom,cp936,latin1
+set enc=utf8
+set fencs=utf8,gbk,gb2312,gb18030
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+
+
+
+
+
+
+"map"""""""""""""'""""""""""'""""""""""'""""""""""'""""""""""'""""""""""'""""""""""'""""""""""'""""""""""'
+
 noremap <LEADER><CR> :nohlsearch<CR>
 noremap K 5k
 noremap J 5j
@@ -58,23 +81,82 @@ map sj :set splitbelow<CR>:split<CR>
 
 "map L6 :vertical res 68<CR>
 "map K6 :res 68<CR>
+"
+"
+""""""""""'""""""""""'""""""""""'""""""""""'""""""""""'""""""""""'""""""""""'""""""""""'""""""""""'""""""""""'
 
-set fileencodings=utf-8,gb2312,gb18030,gbk,ucs-bom,cp936,latin1
-set enc=utf8
-set fencs=utf8,gbk,gb2312,gb18030
 
-set list lcs=tab:\|\ "提供的一个可视化的缩进 For code indented with tabs.
 
-func! WordProcessorMode()
-	setlocal textwidth=80
-	setlocal smartindent
-	setlocal speel spelllang=en_us
-	setlocal noexpandtab
-endfu
 
-"call
-"com! WP call WordProcessorMode
+"""""""""""""Plug""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""'
+"plug.vim
+call plug#begin('~/.config/nvim/plugged')
+"coc.nvim
+Plug 'neoclide/coc.nvim', {'branch':'release'}
 
+"lua
+"Plug 'sumneko/lua-language-server'
+"NERDTree
+Plug 'preservim/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
+
+"indentLine提供的一个可视化的缩进
+Plug 'Yggdroot/indentLine'
+
+"Theme monokai
+"Plug 'cursoexia/vim-monokai'
+
+
+"vim-airline给nvim 提供一个强大的状态栏和标签栏，当打开多个文本时，可以用它进行快速的切换
+Plug 'vim-airline/vim-airline'       
+Plug 'vim-airline/vim-airline-themes' "airline 的主题
+
+"nerdcommenter是一个很好用的注释工具，在normal和visual模式下，他会对你光标所在行或所选中的多行进行注释和去注释，只需要你按下 <\>+<c>+<space>。
+Plug 'scrooloose/nerdcommenter'
+
+"rainbow是一个提供嵌套括号高亮的一个工具。
+Plug 'luochen1990/rainbow'
+
+"tagbar可以用来展示当前的文件的一些函数。
+Plug 'majutsushi/tagbar'
+"vim-cpp-enhanced-highlight，这个是用来加强C++的高亮的
+Plug 'octol/vim-cpp-enhanced-highlight'
+
+"honza/vim-snippets提供C++的snippets
+Plug 'honza/vim-snippets'
+"
+"vimspector debug
+"Plug 'puremourning/vimspector'
+
+"SimpylFold设置代码折叠
+"Plug 'tmhedberg/SimpylFold'
+"dracula color
+Plug 'Mofiqul/dracula.nvim'
+"
+Plug 'tpope/vim-surround' " type yskw' to wrap the word with '' or type cs'` to change 'word' to `word`
+Plug 'gcmt/wildfire.vim' " in Visual mode, type k' to select all text in '', or type k) k] k} kp
+
+" If you have nodejs and yarn
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
+
+call plug#end()
+
+"""""""""""""Plug""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""'
+
+
+
+
+
+
+
+
+
+
+
+
+"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'
+"
+"
 "Translate and launch
 func! CompileGcc()
     exec "w"
@@ -168,6 +250,9 @@ map <F6> :call RunResult()<CR>
 
 map <F7> :com! WP call WordProcessorMode()<CR>
 
+"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'
+
+set list lcs=tab:\|\ "提供的一个可视化的缩进 For code indented with tabs.
 
 
 "Coc.nvim
@@ -247,8 +332,7 @@ let g:coc_global_extensions = [
 	\ 'coc-pyright',
 	\ 'coc-clangd',]
 
-	"\ 'coc-marketplace',
-	"\ 'coc-tsserver',
+
 
 "NERDTree
 "autocmd vimenter * NERDTree  "自动开启Nerdtree
@@ -272,11 +356,9 @@ nnoremap <F3> :NERDTreeToggle<CR> " 开启/关闭nerdtree快捷键
 
 
 
-
 "indentLine提供的一个可视化的缩进
 let g:indent_guides_guide_size            = 1  " 指定对齐线的尺寸
 let g:indent_guides_start_level           = 2  " 从第二层开始可视化显示缩进
-
 
 
 
@@ -395,51 +477,3 @@ nnoremap <silent> <F4> :TagbarToggle<CR> " 将tagbar的开关按键设置为 F4
 "set foldmethod=indent
 "let g:SimpylFold_docstring_preview=0
 
-"plug.vim
-call plug#begin('~/.config/nvim/plugged')
-"coc.nvim
-Plug 'neoclide/coc.nvim', {'branch':'release'}
-
-"lua
-"Plug 'sumneko/lua-language-server'
-"NERDTree
-Plug 'preservim/nerdtree'
-Plug 'Xuyuanp/nerdtree-git-plugin'
-
-"indentLine提供的一个可视化的缩进
-Plug 'Yggdroot/indentLine'
-
-"Theme monokai
-"Plug 'cursoexia/vim-monokai'
-
-
-"vim-airline给nvim 提供一个强大的状态栏和标签栏，当打开多个文本时，可以用它进行快速的切换
-Plug 'vim-airline/vim-airline'       
-Plug 'vim-airline/vim-airline-themes' "airline 的主题
-
-"nerdcommenter是一个很好用的注释工具，在normal和visual模式下，他会对你光标所在行或所选中的多行进行注释和去注释，只需要你按下 <\>+<c>+<space>。
-Plug 'scrooloose/nerdcommenter'
-
-"rainbow是一个提供嵌套括号高亮的一个工具。
-Plug 'luochen1990/rainbow'
-
-"tagbar可以用来展示当前的文件的一些函数。
-Plug 'majutsushi/tagbar'
-"vim-cpp-enhanced-highlight，这个是用来加强C++的高亮的
-Plug 'octol/vim-cpp-enhanced-highlight'
-
-"honza/vim-snippets提供C++的snippets
-Plug 'honza/vim-snippets'
-"
-"vimspector debug
-"Plug 'puremourning/vimspector'
-
-"SimpylFold设置代码折叠
-"Plug 'tmhedberg/SimpylFold'
-"dracula color
-Plug 'Mofiqul/dracula.nvim'
-"
-Plug 'tpope/vim-surround' " type yskw' to wrap the word with '' or type cs'` to change 'word' to `word`
-Plug 'gcmt/wildfire.vim' " in Visual mode, type k' to select all text in '', or type k) k] k} kp
-
-call plug#end()
