@@ -4,49 +4,28 @@ silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.git
 autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 "
-"F5 编译程序，F6运行程序，F7 word模式
-"
-
-
-
-"nvim
-"let mapleader=" "
-"开启高亮
 syntax on
-"Theme
 colorscheme dracula
 
-
-
-
-
-"Set""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"vim 响应
 set updatetime=100
-"vim 剪切板
 set clipboard=unnamedplus
-"开启数字
 set nu
-"相对数字
 set relativenumber
-"信息栏
 set shortmess+=c
-"vim 缓冲区
 set hidden
-"输入线
 set cursorline
 set showcmd
 set noshowmatch
-"set ruler
-"set cindent
-"补全
 set wildmenu
-"搜索
 set hlsearch
 exec "nohlsearch"
 set incsearch
 set ignorecase
 set smartcase
+
+set ttyfast "should make scrolling faster
+set lazyredraw "same as above
+set visualbell
 
 set nowrap
 set expandtab
@@ -58,15 +37,14 @@ set fileencodings=utf-8,gb2312,gb18030,gbk,ucs-bom,cp936,latin1
 set enc=utf8
 set fencs=utf8,gbk,gb2312,gb18030
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-
-
-
-
-
-
-"map"""""""""""""'""""""""""'""""""""""'""""""""""'""""""""""'""""""""""'""""""""""'""""""""""'""""""""""'
+silent !mkdir -p ~/.config/nvim/tmp/backup
+silent !mkdir -p ~/.config/nvim/tmp/undo
+set backupdir=~/.config/nvim/tmp/backup,.
+set directory=~/.config/nvim/tmp/backup,. 
+if has('perseistent_undo')
+    set undofile
+    set undodir=~/.config/nvim/tmp/undo,.
+endif
 
 noremap <LEADER><CR> :nohlsearch<CR>
 noremap K 5k
@@ -79,16 +57,8 @@ map sh :set nosplitright<CR>:vsplit<CR>
 map sk :set nosplitbelow<CR>:split<CR>
 map sj :set splitbelow<CR>:split<CR>
 
-"map L6 :vertical res 68<CR>
-"map K6 :res 68<CR>
-"
-"
-""""""""""'""""""""""'""""""""""'""""""""""'""""""""""'""""""""""'""""""""""'""""""""""'""""""""""'""""""""""'
 
 
-
-
-"""""""""""""Plug""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""'
 "plug.vim
 call plug#begin('~/.config/nvim/plugged')
 "coc.nvim
@@ -127,7 +97,7 @@ Plug 'honza/vim-snippets'
 "
 "vimspector debug
 "Plug 'puremourning/vimspector'
-
+Plug 'mhinz/vim-startify'
 "SimpylFold设置代码折叠
 "Plug 'tmhedberg/SimpylFold'
 "dracula color
@@ -141,121 +111,74 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
 
 call plug#end()
 
-"""""""""""""Plug""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""'
 
-
-
-
-
-
-
-
-
-
-
-
-"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'
-"
-"
-"Translate and launch
-func! CompileGcc()
-    exec "w"
-    let compilecmd="!gcc "
-    let compileflag="-o %< "
-    if search("mpi\.h") != 0
-        let compilecmd = "!mpicc "
-    endif
-    if search("glut\.h") != 0
-        let compileflag .= " -lglut -lGLU -lGL "
-    endif
-    if search("cv\.h") != 0
-        let compileflag .= " -lcv -lhighgui -lcvaux "
-    endif
-    if search("omp\.h") != 0
-        let compileflag .= " -fopenmp "
-    endif
-    if search("math\.h") != 0
-        let compileflag .= " -lm "
-    endif
-    exec compilecmd." % ".compileflag
-endfunc
-func! CompileGpp()
-    exec "w"
-    let compilecmd="!g++ "
-    let compileflag="-o %< "
-    if search("mpi\.h") != 0
-        let compilecmd = "!mpic++ "
-    endif
-    if search("glut\.h") != 0
-        let compileflag .= " -lglut -lGLU -lGL "
-    endif
-    if search("cv\.h") != 0
-        let compileflag .= " -lcv -lhighgui -lcvaux "
-    endif
-    if search("omp\.h") != 0
-        let compileflag .= " -fopenmp "
-    endif
-    if search("math\.h") != 0
-        let compileflag .= " -lm "
-    endif
-    exec compilecmd." % ".compileflag
-endfunc
-
-func! RunPython()
-        exec "!python %"
-endfunc
-func! CompileJava()
-    exec "!javac %"
-endfunc
-func! RunLua()
-		exec "!lua %"
+" Compile function
+noremap <F5> :call CompileRunGcc()<CR>
+func! CompileRunGcc()
+	exec "w"
+	if &filetype == 'c'
+		set splitbelow
+		:sp
+		:res -5
+		term gcc % -o %< && time ./%<
+	elseif &filetype == 'cpp'
+		set splitbelow
+		exec "!g++ -std=c++11 % -Wall -o %<"
+		:sp
+		:res -15
+		:term ./%<
+	elseif &filetype == 'cs'
+		set splitbelow
+		silent! exec "!mcs %"
+		:sp
+		:res -5
+		:term mono %<.exe
+	elseif &filetype == 'java'
+		set splitbelow
+		:sp
+		:res -5
+		term javac % && time java %<
+	elseif &filetype == 'sh'
+		:!time bash %
+	elseif &filetype == 'python'
+		set splitbelow
+		:sp
+		:term python3 %
+	elseif &filetype == 'lua'
+		set splitbelow
+		:sp
+		:term lua %
+	elseif &filetype == 'html'
+		silent! exec "!".g:mkdp_browser." % &"
+	elseif &filetype == 'markdown'
+		exec "InstantMarkdownPreview"
+	elseif &filetype == 'tex'
+		silent! exec "VimtexStop"
+		silent! exec "VimtexCompile"
+	elseif &filetype == 'dart'
+		exec "CocCommand flutter.run -d ".g:flutter_default_device." ".g:flutter_run_args
+		silent! exec "CocCommand flutter.dev.openDevLog"
+	elseif &filetype == 'javascript'
+		set splitbelow
+		:sp
+		:term export DEBUG="INFO,ERROR,WARNING"; node --trace-warnings .
+	elseif &filetype == 'racket'
+		set splitbelow
+		:sp
+		:res -5
+		term racket %
+	elseif &filetype == 'go'
+		set splitbelow
+		:sp
+		:term go run .
+	endif
 endfunc
 
-
-func! CompileCode()
-        exec "w"
-        if &filetype == "cpp"
-                exec "call CompileGpp()"
-        elseif &filetype == "c"
-                exec "call CompileGcc()"
-        elseif &filetype == "python"
-                exec "call RunPython()"
-        elseif &filetype == "java"
-                exec "call CompileJava()"
-		elseif &filetype == "lua"
-			exec "call RunLua()"
-        endif
-endfunc
-
-func! RunResult()
-        exec "w"
-        if search("mpi\.h") != 0
-            exec "!mpirun -np 4 ./%<"
-        elseif &filetype == "cpp"
-            exec "! ./%<"
-        elseif &filetype == "c"
-            exec "! ./%<"
-        elseif &filetype == "python"
-            exec "call RunPython"
-        elseif &filetype == "java"
-            exec "!java %<"
-        endif
-endfunc
-
-map <F5> :call CompileCode()<CR>
-imap <F5> <ESC>:call CompileCode()<CR>
-vmap <F5> <ESC>:call CompileCode()<CR>
-
-map <F6> :call RunResult()<CR>
-
-map <F7> :com! WP call WordProcessorMode()<CR>
-
-"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'
 
 set list lcs=tab:\|\ "提供的一个可视化的缩进 For code indented with tabs.
 
 
-"Coc.nvim
+"=============Coc.nvim================="
 "TAB 补全
 inoremap <silent><expr> <TAB>
       \ pumvisible() ? "\<C-n>" :
@@ -334,7 +257,29 @@ let g:coc_global_extensions = [
 
 
 
-"NERDTree
+
+"=====================NERDTree===========================
+"       HELP
+"       新建文件	ma	在要创建文件的目录中按命令 ma然后键入你要创建的文件名称即可。
+"       删除文件	md	在要删除的文件上按命令md然后输入y回车即可。
+"       移动文件/修改文件名	mm	在要修改的文件上按命令mm然后输入对应的目录和名称回车即可。
+"       设置当前目录为项目根目录	C	在要设置为根目录的目录上按即可"查看当前文件所在目录	
+"       :NERDTreeFind	执行命令 :NERDTreeFind 或添加 map <leader>v :NERDTreeFind<CR> 全局使用
+"       i和s 水平分割或纵向分割窗口打开文件
+"       u 打开上层目录
+"       t 在标签页中打开
+"       T 在后台标签页中打开
+"       
+"       o 打开关闭文件或者目录，如果是文件的话，光标出现在打开的文件中
+"       O 打开结点下的所有目录
+"       X 合拢当前结点的所有目录
+"       x 合拢当前结点的父目录
+"       p 到上层目录
+"       P 到根目录
+"       K 到同目录第一个节点
+"       J 到同目录最后一个节点
+"       m 显示文件系统菜单（添加、删除、移动操作）
+"
 "autocmd vimenter * NERDTree  "自动开启Nerdtree
 let g:NERDTreeWinSize = 25 "设定 NERDTree 视窗大小
 let NERDTreeShowBookmarks=1  " 开启Nerdtree时自动显示Bookmarks
@@ -345,15 +290,26 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 " 设置树的显示图标
 let g:NERDTreeDirArrowExpandable = '+'
 let g:NERDTreeDirArrowCollapsible = '-'
-let NERDTreeIgnore = ['\.pyc$']  " 过滤所有.pyc文件不显示
 let g:NERDTreeShowLineNumbers=0 " 是否显示行号
 let g:NERDTreeHidden=1     "不显示隐藏文件
 ""Making it prettier
 let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
-nnoremap <F3> :NERDTreeToggle<CR> " 开启/关闭nerdtree快捷键
-
-
+let NERDTreeIgnore=['\.pyc','\~$','\.swp']
+let g:NERDTreeGitStatusIndicatorMapCustom = {
+    \ "Modified"  : "✹",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ 'Ignored'   : '☒',
+    \ "Unknown"   : "?"
+    \ }
+nnoremap <LEADER>e :NERDTreeToggle<CR> " 开启/关闭nerdtree快捷键
+"================================================================
 
 
 "indentLine提供的一个可视化的缩进
