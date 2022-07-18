@@ -32,7 +32,8 @@ set expandtab
 set tabstop=4
 set softtabstop=4
 set shiftwidth=4
-"set autoindent
+set tw=80
+set autoindent
 set fileencodings=utf-8,gb2312,gb18030,gbk,ucs-bom,cp936,latin1
 set enc=utf8
 set fencs=utf8,gbk,gb2312,gb18030
@@ -73,10 +74,6 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 "indentLine提供的一个可视化的缩进
 Plug 'Yggdroot/indentLine'
 
-"Theme monokai
-"Plug 'cursoexia/vim-monokai'
-
-
 "vim-airline给nvim 提供一个强大的状态栏和标签栏，当打开多个文本时，可以用它进行快速的切换
 Plug 'vim-airline/vim-airline'       
 Plug 'vim-airline/vim-airline-themes' "airline 的主题
@@ -95,85 +92,193 @@ Plug 'octol/vim-cpp-enhanced-highlight'
 "honza/vim-snippets提供C++的snippets
 Plug 'honza/vim-snippets'
 "
-"vimspector debug
-"Plug 'puremourning/vimspector'
 Plug 'mhinz/vim-startify'
-"SimpylFold设置代码折叠
-"Plug 'tmhedberg/SimpylFold'
+"
 "dracula color
 Plug 'Mofiqul/dracula.nvim'
+
 "
 Plug 'tpope/vim-surround' " type yskw' to wrap the word with '' or type cs'` to change 'word' to `word`
 Plug 'gcmt/wildfire.vim' " in Visual mode, type k' to select all text in '', or type k) k] k} kp
 
-" If you have nodejs and yarn
+" Markdown
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
+Plug 'instant-markdown/vim-instant-markdown', {'for': 'markdown', 'do': 'yarn install'}
+Plug 'godlygeek/tabular'
+Plug 'mzlogin/vim-markdown-toc'
+Plug 'plasticboy/vim-markdown'
+Plug 'iamcco/markdown-preview.nvim'
+"安装插件
+Plug 'ferrine/md-img-paste.vim' 
 
 call plug#end()
 
 
 " Compile function
-noremap <F5> :call CompileRunGcc()<CR>
+"=========<F5>Compile<F6>RunResult=====================
+" func! CompileGcc()
+"     exec "w"
+"     let compilecmd="!gcc "
+"     let compileflag="-o %< "
+"     if search("mpi\.h") != 0
+"         let compilecmd = "!mpicc "
+"     endif
+"     if search("glut\.h") != 0
+"         let compileflag .= " -lglut -lGLU -lGL "
+"     endif
+"     if search("cv\.h") != 0
+"         let compileflag .= " -lcv -lhighgui -lcvaux "
+"     endif
+"     if search("omp\.h") != 0
+"         let compileflag .= " -fopenmp "
+"     endif
+"     if search("math\.h") != 0
+"         let compileflag .= " -lm "
+"     endif
+"     exec compilecmd." % ".compileflag
+" endfunc
+" func! CompileGpp()
+"     exec "w"
+"     let compilecmd="!g++ "
+"     let compileflag="-o %< "
+"     if search("mpi\.h") != 0
+"         let compilecmd = "!mpic++ "
+"     endif
+"     if search("glut\.h") != 0
+"         let compileflag .= " -lglut -lGLU -lGL "
+"     endif
+"     if search("cv\.h") != 0
+"         let compileflag .= " -lcv -lhighgui -lcvaux "
+"     endif
+"     if search("omp\.h") != 0
+"         let compileflag .= " -fopenmp "
+"     endif
+"     if search("math\.h") != 0
+"         let compileflag .= " -lm "
+"     endif
+"     exec compilecmd." % ".compileflag
+" endfunc
+"
+" func! RunPython()
+"         exec "!python %"
+" endfunc
+" func! CompileJava()
+"     exec "!javac %"
+" endfunc
+" func! RunLua()
+"         exec "!lua %"
+" endfunc
+" func! CompileCode()
+"         exec "w"
+"         if &filetype == "cpp"
+"                 exec "call CompileGpp()"
+"         elseif &filetype == "c"
+"                 exec "call CompileGcc()"
+"         elseif &filetype == "python"
+"                 exec "call RunPython()"
+"         elseif &filetype == "java"
+"                 exec "call CompileJava()"
+"         elseif &filetype == "lua"
+"             exec "call RunLua()"
+"         endif
+" endfunc
+"
+" func! RunResult()
+"         exec "w"
+"         if search("mpi\.h") != 0
+"             exec "!mpirun -np 4 ./%<"
+"         elseif &filetype == "cpp"
+"             exec "! ./%<"
+"         elseif &filetype == "c"
+"             exec "! ./%<"
+"         elseif &filetype == "python"
+"             exec "call RunPython"
+"         elseif &filetype == "java"
+"             exec "!java %<"
+"         endif
+" endfunc
+" func! CompileRun()
+"     CompileCode()
+"     RunResult()
+" endfunc
+"
+" map <F5> :call CompileCode()<CR>
+" imap <F5> <ESC>:call CompileCode()<CR>
+" vmap <F5> <ESC>:call CompileCode()<CR>
+" map <F6> :call RunResult()<CR>
+"=========<F5>Compile<F6>RunResult=====================
+
+"=========<LEADER>r -> Com&Run=====================
+noremap <LEADER>r :call CompileRunGcc()<CR>
 func! CompileRunGcc()
-	exec "w"
-	if &filetype == 'c'
-		set splitbelow
-		:sp
-		:res -5
-		term gcc % -o %< && time ./%<
-	elseif &filetype == 'cpp'
-		set splitbelow
-		exec "!g++ -std=c++11 % -Wall -o %<"
-		:sp
-		:res -15
-		:term ./%<
-	elseif &filetype == 'cs'
-		set splitbelow
-		silent! exec "!mcs %"
-		:sp
-		:res -5
-		:term mono %<.exe
-	elseif &filetype == 'java'
-		set splitbelow
-		:sp
-		:res -5
-		term javac % && time java %<
-	elseif &filetype == 'sh'
-		:!time bash %
-	elseif &filetype == 'python'
-		set splitbelow
-		:sp
-		:term python3 %
-	elseif &filetype == 'lua'
-		set splitbelow
-		:sp
-		:term lua %
-	elseif &filetype == 'html'
-		silent! exec "!".g:mkdp_browser." % &"
-	elseif &filetype == 'markdown'
-		exec "InstantMarkdownPreview"
-	elseif &filetype == 'tex'
-		silent! exec "VimtexStop"
-		silent! exec "VimtexCompile"
-	elseif &filetype == 'dart'
-		exec "CocCommand flutter.run -d ".g:flutter_default_device." ".g:flutter_run_args
-		silent! exec "CocCommand flutter.dev.openDevLog"
-	elseif &filetype == 'javascript'
-		set splitbelow
-		:sp
-		:term export DEBUG="INFO,ERROR,WARNING"; node --trace-warnings .
-	elseif &filetype == 'racket'
-		set splitbelow
-		:sp
-		:res -5
-		term racket %
-	elseif &filetype == 'go'
-		set splitbelow
-		:sp
-		:term go run .
-	endif
+    exec "w"
+    if &filetype == 'c'
+        set splitbelow
+        :sp
+        :res -5
+        term gcc % -o %< && time ./%<
+    elseif &filetype == 'cpp'
+        set splitbelow
+        exec "!g++ -std=c++11 % -Wall -o %<"
+        :sp
+        :res -15
+        :term ./%<
+    elseif &filetype == 'cs'
+        set splitbelow
+        silent! exec "!mcs %"
+        :sp
+        :res -5
+        :term mono %<.exe
+    elseif &filetype == 'java'
+        set splitbelow
+        :sp
+        :res -5
+        term javac % && time java %<
+    elseif &filetype == 'sh'
+        :!time bash %
+    elseif &filetype == 'python'
+        set splitbelow
+        :sp
+        :term python3 %
+    elseif &filetype == 'lua'
+        set splitbelow
+        :sp
+        :term lua %
+    elseif &filetype == 'html'
+        silent! exec "!".g:mkdp_browser." % &"
+    elseif &filetype == 'markdown'
+        exec "InstantMarkdownPreview"
+    elseif &filetype == 'tex'
+        silent! exec "VimtexStop"
+        silent! exec "VimtexCompile"
+    elseif &filetype == 'dart'
+        exec "CocCommand flutter.run -d ".g:flutter_default_device." ".g:flutter_run_args
+        silent! exec "CocCommand flutter.dev.openDevLog"
+    elseif &filetype == 'javascript'
+        set splitbelow
+        :sp
+        :term export DEBUG="INFO,ERROR,WARNING"; node --trace-warnings .
+    elseif &filetype == 'racket'
+        set splitbelow
+        :sp
+        :res -5
+        term racket %
+    elseif &filetype == 'go'
+        set splitbelow
+        :sp
+        :term go run .
+    endif
 endfunc
 
+"设置默认储存文件夹。这里表示储存在当前文档所在文件夹下的'pic'文件夹下，相当于 ./pic/
+let g:mdip_imgdir = 'pic' 
+"设置默认图片名称。当图片名称没有给出时，使用默认图片名称
+let g:mdip_imgname = 'image'
+"设置快捷键，个人喜欢 Ctrl+p 的方式，比较直观
+autocmd FileType markdown nnoremap <silent> <C-p> :call mdip#MarkdownClipboardImage()<CR>F%i
+
+
+"=========<LEADER>r -> Com&Run=====================
 
 set list lcs=tab:\|\ "提供的一个可视化的缩进 For code indented with tabs.
 
